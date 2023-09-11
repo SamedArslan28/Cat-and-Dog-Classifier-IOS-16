@@ -17,7 +17,7 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
     override func viewDidLoad() {
         super.viewDidLoad()
         imagePicker.delegate = self
-      
+        
     }
     
     @IBAction func cameraTapped(_ sender: Any) {
@@ -30,7 +30,7 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         
         if let image = info[.originalImage] as? UIImage {
             
-            imageView.image = image
+            
             imagePicker.dismiss(animated: true, completion: nil)
             
             detect(image: image)
@@ -43,23 +43,32 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
                 let resized = image.resize(size: CGSize(width: 299, height: 299))
                 let buffered = resized?.getCVPixelBuffer()
                 let predictions = try model.prediction(image: buffered!)
+                imageView.image = image
                 self.navigationItem.title=predictions.classLabel
                 
             }
             
             catch{
-                print("error")
+                ShowAlert(with: "Cant predict the image", "Prediction error")
             }
             
         }
         else{
-            print("cannot find model")
-            
+            ShowAlert(with: "Model Not found", "Model error")
             
         }
         
         
     }
     
+    func ShowAlert(with message: String,_ title:String)  {
+        let alertController = UIAlertController(title:title , message: message, preferredStyle: .alert)
+        
+        let okAction = UIAlertAction(title: "OK", style: .default, handler: nil)
+        
+        alertController.addAction(okAction)
+        
+        present(alertController, animated: true, completion: nil)
+    }
 }
 
